@@ -22,7 +22,7 @@ const VALID_THEMES = [
 const RoastSchema = z.object({
   tema_visual: z
       .string()
-      .refine((v) => VALID_THEMES.includes(v as any), {
+      .refine((v) => VALID_THEMES.includes(v as typeof VALID_THEMES[number]), {
         message: "tema_visual tidak valid",
       })
       .catch("vibe_check"), // fallback kalau tema nggak dikenal

@@ -58,7 +58,7 @@ export default function RoastCard({ result, username }: RoastCardProps) {
             <div className="flex items-start justify-between mb-5 relative z-10">
               <div className="flex flex-col">
                 <p className={`text-xs font-bold uppercase tracking-widest mb-1 whitespace-nowrap ${theme.textSecondary}`}>
-                  🎵 Roast My Taste
+                  🎵 Judged
                 </p>
                 {username && (
                     <p className={`text-xs ${theme.textSecondary} opacity-70`}>
@@ -130,7 +130,7 @@ export default function RoastCard({ result, username }: RoastCardProps) {
             </div>
 
             <p className={`relative z-10 text-center text-xs mt-5 ${theme.textSecondary} opacity-40`}>
-              roastmytaste.app
+              judged.vercel.app
             </p>
           </div>
         </div>

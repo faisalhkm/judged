@@ -106,7 +106,7 @@ export default function RoastingLoader() {
 
             {/* Flavor text */}
             <p className="text-center text-zinc-600 text-xs mt-8 italic">
-                "Sabar... ini butuh ketelitian tinggi buat ngehancurin lo."
+                &ldquo;Sabar... ini butuh ketelitian tinggi buat ngehancurin lo.&rdquo;
             </p>
         </div>
     );

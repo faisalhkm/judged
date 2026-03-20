@@ -94,7 +94,7 @@ export default function HomePage() {
           <div className="relative z-10 max-w-sm w-full">
             <div className="text-6xl mb-6">🎵</div>
             <h1 className="text-4xl font-black text-white mb-3 tracking-tight">
-              Roast My Taste
+              Judged
             </h1>
             <p className="text-zinc-400 text-sm mb-10 leading-relaxed">
               Kasih tau Spotify lo, kita roasting selera musik lo
@@ -137,7 +137,7 @@ export default function HomePage() {
           <div className="flex items-center justify-between mb-10">
             <div>
               <h1 className="text-xl font-black text-white tracking-tight">
-                🎵 Roast My Taste
+                🎵 Judged
               </h1>
               <p className="text-zinc-500 text-xs mt-0.5">
                 Halo,{" "}

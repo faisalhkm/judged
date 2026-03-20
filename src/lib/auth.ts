@@ -12,19 +12,27 @@ const SPOTIFY_SCOPES = [
 ].join(" ");
 
 export const SPOTIFY_AUTH_URL =
-  "https://accounts.spotify.com/authorize?" +
-  new URLSearchParams({ scope: SPOTIFY_SCOPES });
+    "https://accounts.spotify.com/authorize?" +
+    new URLSearchParams({ scope: SPOTIFY_SCOPES });
 
 // ─── Token Refresh Helper ─────────────────────────────────────────────────────
-async function refreshAccessToken(token: any) {
+interface RefreshToken {
+  accessToken?: string;
+  refreshToken?: string;
+  accessTokenExpires?: number;
+  error?: string;
+  [key: string]: unknown;
+}
+
+async function refreshAccessToken(token: RefreshToken) {
   try {
     const params = new URLSearchParams({
       grant_type: "refresh_token",
-      refresh_token: token.refreshToken,
+      refresh_token: token.refreshToken ?? "",
     });
 
     const basicAuth = Buffer.from(
-      `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
+        `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
     ).toString("base64");
 
     const response = await fetch("https://accounts.spotify.com/api/token", {
@@ -73,8 +81,8 @@ export const authOptions: NextAuthOptions = {
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
           accessTokenExpires: account.expires_at
-            ? account.expires_at * 1000
-            : Date.now() + 3600 * 1000,
+              ? account.expires_at * 1000
+              : Date.now() + 3600 * 1000,
         };
       }
 
