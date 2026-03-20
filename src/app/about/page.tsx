@@ -76,7 +76,7 @@ export default function AboutPage() {
           <div className="mt-14 pt-8 border-t border-zinc-800 flex gap-6 text-xs text-zinc-600">
             <Link href="/" className="hover:text-zinc-400 transition-colors">Home</Link>
             <Link href="/privacy" className="hover:text-zinc-400 transition-colors">Privacy Policy</Link>
-            <a href="mailto:YOUR_EMAIL" className="hover:text-zinc-400 transition-colors">Contact</a>
+            <Link href="/contact" className="hover:text-zinc-400 transition-colors">Contact</Link>
           </div>
         </div>
       </main>

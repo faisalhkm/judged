@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 
-// Ganti dengan info kontak lo
-const CONTACT_EMAIL = "YOUR_EMAIL@gmail.com";
+const CONTACT_EMAIL = "judged.app@gmail.com";
 const INSTAGRAM_HANDLE = "faisal.hkm";
 
 export default function ContactPage() {

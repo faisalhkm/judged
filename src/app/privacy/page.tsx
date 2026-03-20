@@ -79,7 +79,7 @@ export default function PrivacyPage() {
               <p>
                 Kalau ada pertanyaan soal privasi, hubungi lewat{" "}
                 <a
-                    href="mailto:YOUR_EMAIL"
+                    href="mailto:judged.app@gmail.com"
                     className="text-zinc-300 underline underline-offset-2 hover:text-white"
                 >
                   email
