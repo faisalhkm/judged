@@ -19,12 +19,23 @@ export default function RoastCard({ result, username }: RoastCardProps) {
   const handleDownload = async () => {
     if (!cardRef.current) return;
     try {
-      const dataUrl = await toPng(cardRef.current, {
+      const node = cardRef.current;
+      const width = node.offsetWidth;
+      const height = node.offsetHeight;
+
+      const dataUrl = await toPng(node, {
         cacheBust: true,
         pixelRatio: 2,
+        width,
+        height,
+        backgroundColor: "transparent",
+        style: {
+          borderRadius: "24px",
+          overflow: "hidden",
+        },
       });
       const link = document.createElement("a");
-      link.download = `roast-${result.tema_visual}-${Date.now()}.png`;
+      link.download = `judged-${result.tema_visual}-${Date.now()}.png`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
@@ -74,8 +85,8 @@ export default function RoastCard({ result, username }: RoastCardProps) {
                 {result.julukan}
               </h2>
               <span className={`inline-block mt-2 text-xs px-3 py-1 rounded-full font-semibold ${theme.badge}`}>
-                {theme.label}
-              </span>
+              {theme.label}
+            </span>
             </div>
 
             <div className="relative z-10 mb-5">
@@ -108,8 +119,8 @@ export default function RoastCard({ result, username }: RoastCardProps) {
               <div className="flex flex-wrap gap-2">
                 {result.style_kit.map((item, i) => (
                     <span key={i} className={`text-xs px-3 py-1 rounded-full font-medium ${theme.badge}`}>
-                    {item}
-                  </span>
+                  {item}
+                </span>
                 ))}
               </div>
             </div>
@@ -119,7 +130,9 @@ export default function RoastCard({ result, username }: RoastCardProps) {
                 <p className={`text-xs font-bold uppercase tracking-wider ${theme.textSecondary}`}>
                   Skor Kebahagiaan
                 </p>
-                <span className={`text-lg font-bold uppercase tracking-wider whitespace-nowrap ${theme.textSecondary}`}>{happinessEmoji} {happiness}/10</span>
+                <span className={`text-lg font-bold uppercase tracking-wider whitespace-nowrap ${theme.textSecondary}`}>
+                {happinessEmoji} {happiness}/10
+              </span>
               </div>
               <div className="h-2 rounded-full w-full bg-black/20">
                 <div
@@ -130,7 +143,7 @@ export default function RoastCard({ result, username }: RoastCardProps) {
             </div>
 
             <p className={`relative z-10 text-center text-xs mt-5 ${theme.textSecondary} opacity-40`}>
-              judged.vercel.app
+              judged-app.vercel.app
             </p>
           </div>
         </div>

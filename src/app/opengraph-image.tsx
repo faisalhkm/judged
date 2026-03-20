@@ -69,7 +69,7 @@ export default function OGImage() {
             maxWidth: "700px",
           }}
         >
-          Dapetin roasting paling toxic soal selera musik lo
+          Dapetin judging paling toxic soal selera musik lo
         </div>
 
         {/* CTA Badge */}

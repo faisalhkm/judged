@@ -9,11 +9,11 @@ const APP_URL = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
     title: "Judged 🎵🔥",
-    description: "Dapetin roasting paling toxic soal selera musik lo. Gratis. Tanpa ampun.",
+    description: "Dapetin judging paling toxic soal selera musik lo. Gratis. Tanpa ampun.",
     metadataBase: new URL(APP_URL),
     openGraph: {
         title: "Judged 🎵🔥",
-        description: "Dapetin roasting paling toxic soal selera musik lo. Gratis. Tanpa ampun.",
+        description: "Dapetin judging paling toxic soal selera musik lo. Gratis. Tanpa ampun.",
         url: APP_URL,
         siteName: "Judged",
         locale: "id_ID",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     twitter: {
         card: "summary_large_image",
         title: "Judged 🎵🔥",
-        description: "Dapetin roasting paling toxic soal selera musik lo. Gratis. Tanpa ampun.",
+        description: "Dapetin judging paling toxic soal selera musik lo. Gratis. Tanpa ampun.",
     },
 };
 

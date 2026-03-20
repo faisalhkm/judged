@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import RoastCard from "@/components/RoastCard";
 import RoastingLoader, { MIN_LOADING_MS } from "@/components/RoastingLoader";
+import Footer from "@/components/Footer";
 import type { RoastResult } from "@/lib/groq";
 
 type TimeRange = "short_term" | "medium_term" | "long_term";
@@ -48,11 +49,7 @@ export default function HomePage() {
 
       const json = await res.json();
 
-      // Minimum display time — biar animasi loading selalu keliatan full
-      const elapsed = Date.now() - loadingStartRef.current;
-      const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
-      if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
-
+      // Cek rate limit DULU sebelum minimum display time
       if (res.status === 429) {
         setRateLimited({
           message: json.error,
@@ -61,6 +58,11 @@ export default function HomePage() {
         });
         return;
       }
+
+      // Minimum display time hanya untuk response sukses/error biasa
+      const elapsed = Date.now() - loadingStartRef.current;
+      const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
+      if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
 
       if (!res.ok) {
         setError(json.error ?? "Ada yang salah. Coba lagi.");
@@ -86,54 +88,58 @@ export default function HomePage() {
 
   if (!session) {
     return (
-        <main className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-6 text-center">
+        <main className="min-h-screen bg-zinc-950 flex flex-col px-6 text-center">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-green-500/10 rounded-full blur-3xl" />
           </div>
 
-          <div className="relative z-10 max-w-sm w-full">
-            <div className="text-6xl mb-6">🎵</div>
-            <h1 className="text-4xl font-black text-white mb-3 tracking-tight">
-              Judged
-            </h1>
-            <p className="text-zinc-400 text-sm mb-10 leading-relaxed">
-              Kasih tau Spotify lo, kita roasting selera musik lo
-              habis-habisan. Gratis. Tanpa ampun.
-            </p>
+          <div className="relative z-10 flex-1 flex flex-col items-center justify-center py-12">
+            <div className="max-w-sm w-full">
+              <div className="text-6xl mb-6">🎵</div>
+              <h1 className="text-4xl font-black text-white mb-3 tracking-tight">
+                Judged
+              </h1>
+              <p className="text-zinc-400 text-sm mb-10 leading-relaxed">
+                Kasih tau Spotify lo, kita judge selera musik lo
+                habis-habisan. Gratis. Tanpa ampun.
+              </p>
 
-            <button
-                onClick={() => signIn("spotify")}
-                className="
-              w-full flex items-center justify-center gap-3
-              bg-[#1DB954] hover:bg-[#1ed760] text-black font-bold
-              px-6 py-4 rounded-2xl text-sm
-              transition-all duration-150 active:scale-95
-              shadow-[0_0_30px_rgba(29,185,84,0.4)]
-            "
-            >
-              <SpotifyIcon />
-              Login dengan Spotify
-            </button>
+              <button
+                  onClick={() => signIn("spotify")}
+                  className="
+                w-full flex items-center justify-center gap-3
+                bg-[#1DB954] hover:bg-[#1ed760] text-black font-bold
+                px-6 py-4 rounded-2xl text-sm
+                transition-all duration-150 active:scale-95
+                shadow-[0_0_30px_rgba(29,185,84,0.4)]
+              "
+              >
+                <SpotifyIcon />
+                Login dengan Spotify
+              </button>
 
-            <p className="text-zinc-600 text-xs mt-6">
-              Hanya baca data top tracks/artists.
-              <br />
-              Nggak nulis apapun ke akun lo.
-            </p>
+              <p className="text-zinc-600 text-xs mt-6">
+                Hanya baca data top tracks/artists.
+                <br />
+                Nggak nulis apapun ke akun lo.
+              </p>
+            </div>
           </div>
+
+          <Footer />
         </main>
     );
   }
 
   return (
-      <main className="min-h-screen bg-zinc-950 px-6 py-12">
+      <main className="min-h-screen bg-zinc-950 px-6 pt-12 flex flex-col">
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 left-1/4 w-72 h-72 bg-violet-500/5 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/5 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative z-10 max-w-md mx-auto">
-          {/* Header — selalu tampil */}
+        <div className="relative z-10 max-w-md mx-auto w-full flex-1 flex flex-col">
+          {/* Header */}
           <div className="flex items-center justify-between mb-10">
             <div>
               <h1 className="text-xl font-black text-white tracking-tight">
@@ -154,150 +160,147 @@ export default function HomePage() {
             </button>
           </div>
 
-          {/* Loading state */}
-          {loading && <RoastingLoader />}
+          <div className="flex-1">
+            {/* Loading state */}
+            {loading && <RoastingLoader />}
 
-          {/* Main content — sembunyiin saat loading */}
-          {!loading && (
-              <>
-                {/* Time Range Selector */}
-                {!result && (
-                    <div className="mb-8">
-                      <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold mb-3">
-                        Roast berdasarkan periode
-                      </p>
-                      <div className="grid grid-cols-3 gap-2">
-                        {TIME_RANGE_OPTIONS.map((opt) => (
-                            <button
-                                key={opt.value}
-                                onClick={() => setTimeRange(opt.value)}
-                                className={`
-                  flex flex-col items-center py-3 px-2 rounded-2xl text-center
-                  transition-all duration-150 border
-                  ${
-                                    timeRange === opt.value
-                                        ? "bg-white text-black border-white"
-                                        : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-600"
-                                }
-                `}
-                            >
-                              <span className="text-xs font-black">{opt.label}</span>
-                              <span className="text-[10px] mt-0.5 text-zinc-600">
-                  {opt.sub}
-                </span>
-                            </button>
-                        ))}
-                      </div>
-                    </div>
-                )}
-
-                {/* Roast Button */}
-                {!result && (
-                    <button
-                        onClick={handleRoast}
-                        disabled={loading}
-                        className="
-            w-full py-4 rounded-2xl font-black text-sm tracking-wide
-            bg-white text-black
-            hover:bg-zinc-100 active:scale-95
-            disabled:opacity-50 disabled:cursor-not-allowed
-            transition-all duration-150
-            shadow-[0_0_30px_rgba(255,255,255,0.1)]
-            mb-8
-          "
-                    >
-                      {loading ? (
-                          <span className="flex items-center justify-center gap-2">
-              <span className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-              Lagi nge-roast lo...
-            </span>
-                      ) : (
-                          "🔥 Roast Selera Gue"
-                      )}
-                    </button>
-                )}
-
-                {/* Remaining roasts indicator */}
-                {remainingRoasts !== null && remainingRoasts <= 1 && !rateLimited && (
-                    <div className="bg-amber-950/40 border border-amber-800/40 rounded-2xl p-3 mb-4 text-center">
-                      <p className="text-amber-400 text-xs">
-                        {remainingRoasts === 0
-                            ? "Ini roasting terakhir lo hari ini 👀"
-                            : `Sisa ${remainingRoasts}x roasting hari ini`}
-                      </p>
-                    </div>
-                )}
-
-                {/* Rate Limited */}
-                {rateLimited && (
-                    <div className="bg-zinc-900 border border-zinc-700 rounded-3xl p-6 mb-6 text-center animate-fadeIn">
-                      <div className="text-4xl mb-4">😵‍💫</div>
-                      <p className="text-white text-sm leading-relaxed mb-2">
-                        {rateLimited.message}
-                      </p>
-                      <p className="text-zinc-500 text-xs mb-6">
-                        Reset dalam: <span className="text-zinc-300">{rateLimited.resetIn}</span>
-                      </p>
-                      <div className="flex flex-col gap-2">
-                        {rateLimited.reason === "user" && (
-                            <>
-                              <p className="text-zinc-500 text-xs mb-1">
-                                Donasi = developer bisa upgrade server = limit naik buat semua orang 🙏
-                              </p>
-                              <a
-                                  href={SAWERIA_URL}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="
-                      w-full py-3 rounded-2xl font-bold text-sm
-                      bg-amber-400 text-black
-                      hover:bg-amber-300 active:scale-95
-                      transition-all duration-150 block
-                    "
+            {/* Main content */}
+            {!loading && (
+                <>
+                  {/* Time Range Selector */}
+                  {!result && (
+                      <div className="mb-8">
+                        <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold mb-3">
+                          Judge berdasarkan periode
+                        </p>
+                        <div className="grid grid-cols-3 gap-2">
+                          {TIME_RANGE_OPTIONS.map((opt) => (
+                              <button
+                                  key={opt.value}
+                                  onClick={() => setTimeRange(opt.value)}
+                                  className={`
+                          flex flex-col items-center py-3 px-2 rounded-2xl text-center
+                          transition-all duration-150 border
+                          ${
+                                      timeRange === opt.value
+                                          ? "bg-white text-black border-white"
+                                          : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-600"
+                                  }
+                        `}
                               >
-                                ☕ Traktir Developer
-                              </a>
-                            </>
-                        )}
+                                <span className="text-xs font-black">{opt.label}</span>
+                                <span className="text-[10px] mt-0.5 text-zinc-600">
+                          {opt.sub}
+                        </span>
+                              </button>
+                          ))}
+                        </div>
+                      </div>
+                  )}
+
+                  {/* Roast Button */}
+                  {!result && (
+                      <button
+                          onClick={handleRoast}
+                          disabled={loading}
+                          className="
+                    w-full py-4 rounded-2xl font-black text-sm tracking-wide
+                    bg-white text-black
+                    hover:bg-zinc-100 active:scale-95
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                    transition-all duration-150
+                    shadow-[0_0_30px_rgba(255,255,255,0.1)]
+                    mb-8
+                  "
+                      >
+                        🔥 Judge Selera Gue
+                      </button>
+                  )}
+
+                  {/* Remaining roasts indicator */}
+                  {remainingRoasts !== null && remainingRoasts <= 1 && !rateLimited && (
+                      <div className="bg-amber-950/40 border border-amber-800/40 rounded-2xl p-3 mb-4 text-center">
+                        <p className="text-amber-400 text-xs">
+                          {remainingRoasts === 0
+                              ? "Ini judging terakhir lo hari ini 👀"
+                              : `Sisa ${remainingRoasts}x judging hari ini`}
+                        </p>
+                      </div>
+                  )}
+
+                  {/* Rate Limited */}
+                  {rateLimited && (
+                      <div className="bg-zinc-900 border border-zinc-700 rounded-3xl p-6 mb-6 text-center animate-fadeIn">
+                        <div className="text-4xl mb-4">😵‍💫</div>
+                        <p className="text-white text-sm leading-relaxed mb-2">
+                          {rateLimited.message}
+                        </p>
+                        <p className="text-zinc-500 text-xs mb-6">
+                          Reset dalam: <span className="text-zinc-300">{rateLimited.resetIn}</span>
+                        </p>
+                        <div className="flex flex-col gap-2">
+                          {rateLimited.reason === "user" && (
+                              <>
+                                <p className="text-zinc-500 text-xs mb-1">
+                                  Donasi = developer bisa upgrade server = limit naik buat semua orang 🙏
+                                </p>
+                                <a
+                                    href={SAWERIA_URL}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="
+                            w-full py-3 rounded-2xl font-bold text-sm
+                            bg-amber-400 text-black
+                            hover:bg-amber-300 active:scale-95
+                            transition-all duration-150 block
+                          "
+                                >
+                                  ☕ Traktir Developer
+                                </a>
+                              </>
+                          )}
+                          <button
+                              onClick={() => setRateLimited(null)}
+                              className="w-full py-3 rounded-2xl font-bold text-sm bg-zinc-800 text-zinc-400 hover:bg-zinc-700 transition-all duration-150"
+                          >
+                            Oke besok deh 😔
+                          </button>
+                        </div>
+                      </div>
+                  )}
+
+                  {/* Error */}
+                  {error && (
+                      <div className="bg-red-950/50 border border-red-800/50 rounded-2xl p-4 mb-6">
+                        <p className="text-red-400 text-sm">{error}</p>
+                      </div>
+                  )}
+
+                  {/* Result */}
+                  {result && (
+                      <div className="animate-fadeIn">
+                        <RoastCard
+                            result={result}
+                            username={session.user?.name ?? undefined}
+                        />
                         <button
-                            onClick={() => setRateLimited(null)}
-                            className="w-full py-3 rounded-2xl font-bold text-sm bg-zinc-800 text-zinc-400 hover:bg-zinc-700 transition-all duration-150"
+                            onClick={() => setResult(null)}
+                            className="
+                      w-full mt-4 py-3 rounded-2xl font-bold text-sm
+                      bg-zinc-900 text-zinc-400 border border-zinc-800
+                      hover:border-zinc-600 hover:text-zinc-300
+                      transition-all duration-150
+                    "
                         >
-                          Oke besok deh 😔
+                          🔄 Judge Lagi
                         </button>
                       </div>
-                    </div>
-                )}
+                  )}
+                </>
+            )}
+          </div>
 
-                {/* Error */}
-                {error && (
-                    <div className="bg-red-950/50 border border-red-800/50 rounded-2xl p-4 mb-6">
-                      <p className="text-red-400 text-sm">{error}</p>
-                    </div>
-                )}
-
-                {/* Result */}
-                {result && (
-                    <div className="animate-fadeIn">
-                      <RoastCard
-                          result={result}
-                          username={session.user?.name ?? undefined}
-                      />
-                      <button
-                          onClick={() => setResult(null)}
-                          className="
-                w-full mt-4 py-3 rounded-2xl font-bold text-sm
-                bg-zinc-900 text-zinc-400 border border-zinc-800
-                hover:border-zinc-600 hover:text-zinc-300
-                transition-all duration-150
-              "
-                      >
-                        🔄 Roast Lagi
-                      </button>
-                    </div>
-                )}
-              </>
-          )}
+          <Footer />
         </div>
       </main>
   );
